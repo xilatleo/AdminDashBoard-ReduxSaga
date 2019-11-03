@@ -1,31 +1,74 @@
 import React, { Component } from 'react'
-import { withStyles, Container } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 import styles from './styles'
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add'
 import Grid from '@material-ui/core/Grid';
 import {STATUSES} from '../../constants/index'
+import TaskList from '../../components/TaskList';
+import TaskForm from '../../components/TaskForm';
+
+const listTask = [
+    {
+        id: 1,
+        title: 'Read Book',
+        description: 'Read Material UI book',
+        status: 0
+    },
+    {
+        id: 2,
+        title: 'Play guitar',
+        description: 'practice new songs',
+        status: 1
+    },
+    {
+        id: 2,
+        title: 'Play soccer',
+        description: 'with my friends',
+        status: 2
+    }
+]
+
 
 class TaskBoard extends Component {
+    state = {
+        open : false
+    }
+
     renderBoard(){
         let xhtml = null
         xhtml = (
             <Grid container spacing={2}>
-                {
-                    STATUSES.map((status,index)=>{
-                        return (
-                            <Grid item md={4} xs={12} key={status.value}>
-                                {status.label}
-                            </Grid>
+                {STATUSES.map((status)=>{
+                    const taskFiltered = listTask.filter(
+                        task => task.status === status.value
                         )
-                    })
-                }
-
-              
-               
-                
+                        return <TaskList tasks = {taskFiltered} status={status} key={status.value}/>
+                    })}                
             </Grid>            
         )
+        return xhtml
+    }
+
+    handleClose = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    openForm = () => {
+        this.setState({
+            open:true
+        })
+    }
+
+    renderForm(){
+        const {open} = this.state
+        let xhtml = null
+        xhtml = (
+            <TaskForm open={open} onClose={this.handleClose}/>
+        )
+
         return xhtml
     }
 
@@ -33,10 +76,11 @@ class TaskBoard extends Component {
         const {classes} = this.props
         return (
             <div className={classes.taskboard}>
-                <Button variant='contained'color='primary' className={classes.button}>
+                <Button variant='contained'color='primary' className={classes.button} onClick={this.openForm}>
                     <AddIcon /> Add Tasks
                 </Button>
                 {this.renderBoard()}
+                {this.renderForm()}
             </div>
         )        
     }
